@@ -1,32 +1,38 @@
+// sistema-municipal-backend/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const User = require('../models/user');
 
-const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Token não fornecido ou formato inválido' });
-  }
-
-  const token = authHeader.split(' ')[1];
-
+module.exports = async (req, res, next) => {
   try {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Autenticação necessária'
+      });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    const usuario = await User.findByPk(decoded.id, {
+      attributes: { exclude: ['senha'] }
+    });
+
+    if (!usuario) {
+      return res.status(401).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+
+    req.user = usuario;
     next();
-  } catch (err) {
-    res.status(401).json({ message: 'Token inválido', error: err.message });
+    
+  } catch (error) {
+    console.error('[ERRO] Autenticação:', error);
+    return res.status(401).json({
+      success: false,
+      message: 'Token inválido ou expirado'
+    });
   }
 };
-
-const isAuthorized = (permission) => {
-  return (req, res, next) => {
-    const userPermissions = req.user.permissions || [];
-    if (userPermissions.includes(permission) || ['master', 'prefeito', 'secretário'].includes(req.user.role)) {
-      next();
-    } else {
-      return res.status(403).json({ message: 'Acesso negado' });
-    }
-  };
-};
-
-module.exports = { authMiddleware, isAuthorized };

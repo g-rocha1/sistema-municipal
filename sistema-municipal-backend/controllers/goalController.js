@@ -143,4 +143,17 @@ const deleteGoal = async (req, res) => {
   }
 };
 
-module.exports = { createGoal, getGoals, getGoalById, updateGoal, deleteGoal };
+const getGoalsStats = async (req, res) => {
+  try {
+    const goals = await Goal.findAll();
+    const stats = goals.map(goal => ({
+      name: goal.title,
+      progress: goal.progressPercentage,
+    }));
+    res.status(200).json(stats);
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao buscar dados" });
+  }
+};
+
+module.exports = { createGoal, getGoals, getGoalById, updateGoal, deleteGoal, getGoalsStats };

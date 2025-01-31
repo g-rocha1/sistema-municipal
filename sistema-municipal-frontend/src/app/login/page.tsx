@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import api from "../../utils/api";
 
 const Login = () => {
@@ -19,6 +21,11 @@ const Login = () => {
       console.error("Erro ao fazer login:", error.response?.data?.message);
       alert(error.response?.data?.message || "Erro ao fazer login");
     }
+  };
+  const [qrCode, setQrCode] = useState('');
+  const handle2FASetup = async () => {
+    const response = await api.post('/users/2fa/setup');
+    setQrCode(response.data.qrCode);
   };
 
   return (
@@ -55,6 +62,15 @@ const Login = () => {
           Login
         </button>
       </form>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="mt-4">Ativar 2FA</Button>
+        </DialogTrigger>
+        <DialogContent>
+          {qrCode && <img src={qrCode} alt="QR Code 2FA" className="mx-auto" />}
+          <Button onClick={handle2FASetup}>Gerar QR Code</Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

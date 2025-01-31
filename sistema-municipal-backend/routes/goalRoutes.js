@@ -15,5 +15,6 @@ router.get("/", authMiddleware, isAuthorized(["master", "prefeito", "secretário
 router.get("/:id", authMiddleware, isAuthorized(["master", "prefeito", "secretário"]), getGoalById);
 router.put("/:id", authMiddleware, isAuthorized(["master", "prefeito", "secretário"]), updateGoal);
 router.delete("/:id", authMiddleware, isAuthorized(["master", "prefeito"]), deleteGoal);
+router.get('/stats', authMiddleware,isAuthorized(["master", "prefeito", "secretário"]), goalController.getGoalsStats);
 
 module.exports = router;
