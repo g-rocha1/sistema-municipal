@@ -1,0 +1,25 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "YoruShadowX1M",
+    "database": "municipal_system",
+    "host": "localhost",
+    "port": "5432",
+    "dialect": "postgres",
+    "logging": false
+  },
+  "test": {
+    "username": "postgres",
+    "password": "YoruShadowX1M",
+    "database": "municipal_system",
+    "host": "localhost",
+    "port": "5432",
+    "dialect": "postgres",
+    "logging": false
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres",
+    "logging": false
+  }
+}
